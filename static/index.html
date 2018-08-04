@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+    <meta charset="utf-8">
+    <meta name="description" content="Find irasutoya images in english">
+    <meta name="keywords" content="Irasutoya,images,search">
+    <meta property="og:url" content="http://irasutoya.alejandro.pictures" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Search Irasutoya images" />
+    <meta property="og:description" content="Search Irasutoya images for your presentations" />
+    <meta property="og:image" content="https://2.bp.blogspot.com/-Cf0kkCZBuHc/VfS7B9qANTI/AAAAAAAAxXI/MzTO7uHdBS4/s800/happi_oouridashi1_red.png" />
+
+
+    <style>
+        input[type="text"]
+          {
+        font-family: 'PT Sans Narrow', sans-serif;
+        font-size:24px;
+          }
+    
+          .disclaimer { 
+     color: #ccc; 
+    }
+    </style>
+    <title>Irasutoya Search</title>
+    <script src="https://unpkg.com/vue"></script>
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+    <script src="https://unpkg.com/vue-router"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.1/css/foundation.min.css">
+</head>
+
+<body>
+    <div class="container" id="app">
+
+
+        <div class="grid-x grid-padding-x small-up-2 medium-up-4 large-up-6">
+            <ul class="block-grid three-up mobile-two-up no-bullet">
+
+                <li class="columns big-1">
+                    <div class="search-wrapper">
+                        <div class="columns small-3">
+                            <input type="text" value="" v-on:input="getPostsViaREST" v-model="search" placeholder="Search keywoerds.." />
+                        </div>
+
+                    </div>
+
+                </li>
+                <li class="columns big-1">
+                    <div class="disclaimer">
+                        Images belong to <a href="https://www.irasutoya.com/" target="_blank"> Irasutoya</a>.<br>
+                    </div>
+                </li>
+                <li v-for="post in posts.slice(0, 150)" class="columns medium-3">
+                    <div>
+                        <div class="card">
+                            <div class="card-divider">
+                                {{ post.title }}
+                            </div>
+                            <div class="card-section">
+                                <p><a :href='post.entry_url' target="_black"><img :src='post.image_url'/></a></p>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    var router = new VueRouter({
+    mode: 'history',
+    routes: []
+});
+    var vm = new Vue({
+    router,
+        el: '#app',
+        data: {
+          posts: [],
+          search: ''
+         },
+        watch: {
+    
+           search: function (newSearch, oldSearch) {
+               this.answer = 'Waiting for you to stop typing...'
+               this.getPostsViaREST()
+           }
+        },
+        methods: {
+          getPostsViaREST: _.debounce(function() {
+            axios.get("/search?query="+ this.search)
+              .then(response => {this.posts = response.data})
+          }, 300)
+        }
+     });
+     window.setTimeout(function () {
+	   vm.search= "sushi"
+       }, 10);
+</script>
+
+
+</html>
